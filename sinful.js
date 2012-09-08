@@ -163,6 +163,22 @@ void function () {
                 "length"
             ];
 
+            // We only need one of these since they are all identical anyway
+            var clonePrimitiveFunction = makeCloneFunction(clonePrimitive);
+
+            var cloneFunctions = {
+                "[object Null]": clonePrimitiveFunction,
+                "[object Undefined]": clonePrimitiveFunction,
+                "[object Number]": clonePrimitiveFunction,
+                "[object String]": clonePrimitiveFunction,
+                "[object Boolean]": clonePrimitiveFunction,
+                "[object RegExp]": makeCloneFunction(cloneRegExp),
+                "[object Date]": makeCloneFunction(cloneDate),
+                "[object Function]": makeRecursiveCloneFunction(makeCloneFunction(cloneFunction), functionPropertyFilter),
+                "[object Object]": makeRecursiveCloneFunction(makeCloneFunction(cloneObject), []),
+                "[object Array]": makeRecursiveCloneFunction(makeCloneFunction(cloneArray), arrayPropertyFilter)
+            };
+
             // makeCloneFunction -
             //   Wraps one of the clone* functions below so that we can manage
             //   all `thingStack` and `copyStack` oeprations in one place
@@ -251,22 +267,6 @@ void function () {
                     return copy;
                 };
             }
-
-            // We only need one of these since they are all identical anyway
-            var clonePrimitiveFunction = makeCloneFunction(clonePrimitive);
-
-            var cloneFunctions = {
-                "[object Null]": clonePrimitiveFunction,
-                "[object Undefined]": clonePrimitiveFunction,
-                "[object Number]": clonePrimitiveFunction,
-                "[object String]": clonePrimitiveFunction,
-                "[object Boolean]": clonePrimitiveFunction,
-                "[object RegExp]": makeCloneFunction(cloneRegExp),
-                "[object Date]": makeCloneFunction(cloneDate),
-                "[object Function]": makeRecursiveCloneFunction(makeCloneFunction(cloneFunction), functionPropertyFilter),
-                "[object Object]": makeRecursiveCloneFunction(makeCloneFunction(cloneObject), []),
-                "[object Array]": makeRecursiveCloneFunction(makeCloneFunction(cloneArray), arrayPropertyFilter)
-            };
 
             return function _deepCopy() {
 
